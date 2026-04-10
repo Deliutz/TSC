@@ -1,53 +1,137 @@
-# InkTime Smartwatch Project
+Poți copia tot blocul exact cum este.
 
-## 1. Schematic
-În prima parte a proiectului am avut de realizat schema electrică a smartwatch-ului pornind de la modelul oferit pe OCW. Am folosit exclusiv biblioteca de componente pusă la dispoziție în cadrul proiectului, pentru a păstra footprint-urile și simbolurile conforme cu cerințele.
+# ⌚ InkTime Smartwatch Project
 
-Am început prin a plasa în schematic toate blocurile funcționale principale ale dispozitivului:
+Open-source low-cost smartwatch hardware project built around **Nordic nRF52840**, designed in **Autodesk Fusion 360 Electronics**.
+
+---
+
+# 📐 Block Diagram
+```text
+Battery → BQ25180 Charger → RT6160 Buck-Boost → 3V3 Rail
+                                      ↓
+                                nRF52840 MCU
+                     ↙          ↓           ↘
+                BMA423 IMU   E-Paper      DRV2605 Haptic
+                     ↓       Display           ↓
+                MAX17048 Fuel Gauge       Vibration Motor
+                     ↓
+                  USB-C + ESD
+```
+
+---
+
+# 🔩 Bill of Materials (BOM)
+
+| Component | Code | Function |
+|---|---|---|
+| nRF52840 | U1 | Main MCU + BLE |
+| BQ25180YBGR | IC1 | LiPo battery charger |
+| RT6160AWSC | IC9 | Buck-boost 3.3V regulator |
+| BMA423 | IC3 | IMU accelerometer |
+| DRV2605YZFR | IC2 | Haptic driver |
+| MAX17048G+T10 | U3 | Fuel gauge |
+| KH-TYPE-C-16P | J4 | USB-C connector |
+| 503480-2400 | J2 | E-paper display connector |
+| 2450AT18B100E | ANT1 | 2.4 GHz BLE antenna |
+| USBLC6-2SC6Y | D3 | USB ESD protection |
+
+---
+
+# ⚙️ Hardware Functionality
+
+The smartwatch is centered around the **nRF52840**, used for:
+- BLE communication
+- sensor data acquisition
+- display driving
+- button input
+- haptic notifications
+- battery monitoring
+
+## 🔋 Power Path
+- **BQ25180** handles LiPo charging
+- **RT6160** generates stable **3.3V**
+- **MAX17048** monitors battery percentage
+
+## 📡 Sensors & Peripherals
+- **BMA423** connected over **I2C**
+- **E-Paper Display** connected through FPC connector
+- **DRV2605** controls vibration motor
+- **USB-C** used for charging and debugging
+
+---
+
+# 🔌 nRF52840 Pin Usage
+
+## I2C
+- SDA → IMU + Fuel Gauge
+- SCL → IMU + Fuel Gauge
+
+## SWD
+- SWDIO
+- SWDCLK
+- SWO
+- RESET
+
+## GPIO
+- Button UP
+- Button ENTER
+- Button DOWN
+
+## SPI / Display
+- SPI routed to E-paper connector
+- control lines for display driver
+
+---
+
+# 🛠️ Design Process
+
+## 1️⃣ Schematic
+The schematic was built based on the OCW reference design using only the provided libraries.
+
+Implemented functional blocks:
 - LiPo Charger
 - DC/DC
 - IMU
 - SWD
-- E-Paper Drive Circuit
-- E-Paper Display Connector
-- Haptic Driver
+- E-Paper Driver
 - Fuel Gauge
+- Haptic Driver
 - Buttons
-- USB C Connector & ESD Protection
+- USB-C + ESD
 
-După plasarea componentelor, am trecut la realizarea conexiunilor dintre ele și microcontroller, urmărind schema de referință și datasheet-urile componentelor importante.
-
-În procesul de realizare a schemei a trebuit să:
-- modific valorile unor rezistențe și condensatoare pentru a corespunde cerințelor din modelul de referință;
-- aleg capsulele corecte pentru componentele pasive, conform regulilor proiectului;
-- adaug condensatoare de decuplare pe liniile de alimentare pentru circuitele integrate;
-- completez valorile și denumirile componentelor pasive;
-- adaug net labels pentru semnalele importante, astfel încât schema să fie mai clară și conexiunile să poată fi urmărite mai ușor;
-- etichetez liniile de alimentare și semnalele de comunicație;
-- organizez schematicul pe blocuri funcționale pentru a separa partea de power, senzori, display și debugging.
-
-O parte importantă a procesului a fost verificarea atentă a pinilor fiecărei componente și corelarea lor cu semnalele din schema de referință. Am urmărit în special liniile de alimentare, comunicația I2C/SPI, liniile SWD și conexiunile către display.
-
-La final am verificat schema pentru a mă asigura că toate componentele sunt conectate corect și că structura este pregătită pentru etapa de PCB layout.
+During implementation:
+- passive values were adjusted
+- decoupling capacitors were added
+- net labels were created
+- power and signal lines were grouped by function
 
 ---
 
-## 2. PCB Design
-După ce am terminat schema, am trecut la realizarea PCB-ului folosind dimensiunile recomandate din fișierul mecanic.
+## 2️⃣ PCB Design
+The PCB was designed using the provided mechanical outline.
 
-Mai întâi am făcut placement-ul componentelor pe layer-ul TOP, respectând cât am putut layout-ul recomandat. Am poziționat componentele principale, cum ar fi microcontrollerul, circuitul de încărcare, convertorul DC/DC, IMU-ul, driverul haptic, fuel gauge-ul, conectorul pentru display, USB-C și butoanele.
+Main steps:
+- TOP placement of all critical components
+- passive components placed close to IC power pins
+- routing on multiple layers
+- dedicated GND planes
+- antenna clearance preserved
+- USB-C and buttons aligned with enclosure
 
-După aceea am plasat componentele pasive în jurul circuitelor integrate, mai ales condensatoarele de decuplare și filtrare, cât mai aproape de pinii de alimentare.
-
-Următorul pas a fost rutarea traseelor, unde am separat traseele de alimentare de cele de semnal și am folosit plane de masă pe TOP și BOTTOM. Am avut grijă să păstrez zona antenei liberă și să aliniez corect butoanele și mufa USB cu carcasa.
-
-La final am verificat designul cu DRC, am corectat erorile principale și am generat modelul 3D pentru a verifica dacă PCB-ul se integrează corect în carcasa smartwatch-ului.
+DRC was run and the main errors were corrected before export.
 
 ---
 
-## 3. 3D Model
-După finalizarea PCB-ului, am realizat modelul 3D al ansamblului pentru a verifica integrarea componentelor în carcasă.
+## 3️⃣ 3D Model
+The full 3D assembly includes:
+- PCB
+- battery
+- display
+- enclosure
 
-Am inclus PCB-ul, bateria, display-ul și carcasa, iar apoi am verificat poziționarea acestora astfel încât să nu existe suprapuneri și să fie aliniate corect butoanele și portul USB-C.
-
-La final am exportat modelul în format STEP, pentru a putea fi folosit la verificarea mecanică și la prezentarea finală a proiectului.
+The final STEP model was used to verify:
+- mechanical fit
+- USB-C alignment
+- button placement
+- internal clearance
