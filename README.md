@@ -1,69 +1,67 @@
-Poți copia tot blocul exact cum este.
+# InkTime Smartwatch Project
 
-# ⌚ InkTime Smartwatch Project
-
-Open-source low-cost smartwatch hardware project built around **Nordic nRF52840**, designed in **Autodesk Fusion 360 Electronics**.
+Proiect hardware pentru realizarea unui smartwatch open-source low-cost, bazat pe microcontrollerul **Nordic nRF52840**, proiectat în **Autodesk Fusion 360 Electronics**.
 
 ---
 
-# 📐 Block Diagram
+# Diagramă bloc
 ```text
-Battery → BQ25180 Charger → RT6160 Buck-Boost → 3V3 Rail
-                                      ↓
-                                nRF52840 MCU
-                     ↙          ↓           ↘
-                BMA423 IMU   E-Paper      DRV2605 Haptic
-                     ↓       Display           ↓
-                MAX17048 Fuel Gauge       Vibration Motor
-                     ↓
-                  USB-C + ESD
+Baterie LiPo → BQ25180 Charger → RT6160 Buck-Boost → Rail 3.3V
+                                           ↓
+                                     nRF52840 MCU
+                        ↙              ↓              ↘
+                   BMA423 IMU     E-Paper Display    DRV2605 Haptic
+                        ↓                               ↓
+                 MAX17048 Fuel Gauge             Motor vibrații
+                        ↓
+                    USB-C + ESD
 ```
 
 ---
 
-# 🔩 Bill of Materials (BOM)
+# Bill of Materials (BOM)
 
-| Component | Code | Function |
-|---|---|---|
-| nRF52840 | U1 | Main MCU + BLE |
-| BQ25180YBGR | IC1 | LiPo battery charger |
-| RT6160AWSC | IC9 | Buck-boost 3.3V regulator |
-| BMA423 | IC3 | IMU accelerometer |
-| DRV2605YZFR | IC2 | Haptic driver |
-| MAX17048G+T10 | U3 | Fuel gauge |
-| KH-TYPE-C-16P | J4 | USB-C connector |
-| 503480-2400 | J2 | E-paper display connector |
-| 2450AT18B100E | ANT1 | 2.4 GHz BLE antenna |
-| USBLC6-2SC6Y | D3 | USB ESD protection |
-
----
-
-# ⚙️ Hardware Functionality
-
-The smartwatch is centered around the **nRF52840**, used for:
-- BLE communication
-- sensor data acquisition
-- display driving
-- button input
-- haptic notifications
-- battery monitoring
-
-## 🔋 Power Path
-- **BQ25180** handles LiPo charging
-- **RT6160** generates stable **3.3V**
-- **MAX17048** monitors battery percentage
-
-## 📡 Sensors & Peripherals
-- **BMA423** connected over **I2C**
-- **E-Paper Display** connected through FPC connector
-- **DRV2605** controls vibration motor
-- **USB-C** used for charging and debugging
+| Componentă | Cod | Rol | Interfață |
+|---|---|---|---|
+| nRF52840 | U1 | Microcontroller principal + BLE | SPI / I2C / GPIO |
+| BQ25180YBGR | IC1 | Încărcare baterie LiPo | Power |
+| RT6160AWSC | IC9 | Convertor buck-boost 3.3V | Power |
+| BMA423 | IC3 | Accelerometru / IMU | I2C |
+| DRV2605YZFR | IC2 | Driver feedback haptic | I2C / GPIO |
+| MAX17048G+T10 | U3 | Fuel gauge baterie | I2C |
+| KH-TYPE-C-16P | J4 | Conector USB-C | USB |
+| USBLC6-2SC6Y | D3 | Protecție ESD USB | USB |
+| 503480-2400 | J2 | Conector display e-paper | SPI |
+| 2450AT18B100E | ANT1 | Antenă 2.4 GHz BLE | RF |
+| TC2030-IDC | J1 | Conector debugging SWD | SWD |
+| Butoane | SW_UP, SW_ENT, SW_DN | Input utilizator | GPIO |
 
 ---
 
-# 🔌 nRF52840 Pin Usage
+# Funcționalitate hardware
+Designul este construit în jurul microcontrollerului **nRF52840**, responsabil de:
+- comunicația Bluetooth Low Energy;
+- citirea senzorilor;
+- controlul display-ului e-paper;
+- gestionarea butoanelor;
+- controlul feedback-ului haptic;
+- monitorizarea bateriei.
 
-## I2C
+## Alimentare
+- **BQ25180** gestionează încărcarea bateriei LiPo;
+- **RT6160** generează tensiunea stabilă de **3.3V**;
+- **MAX17048** monitorizează nivelul bateriei.
+
+## Senzori și periferice
+- **BMA423** este conectat prin **I2C**;
+- display-ul e-paper este conectat prin conectorul FPC;
+- **DRV2605** comandă motorul de vibrații;
+- USB-C este folosit pentru alimentare și debugging.
+
+---
+
+# Utilizarea pinilor nRF52840
+## Magistrală I2C
 - SDA → IMU + Fuel Gauge
 - SCL → IMU + Fuel Gauge
 
@@ -74,22 +72,23 @@ The smartwatch is centered around the **nRF52840**, used for:
 - RESET
 
 ## GPIO
-- Button UP
-- Button ENTER
-- Button DOWN
+- Buton UP
+- Buton ENTER
+- Buton DOWN
+- semnale control display
+- semnal driver haptic
 
-## SPI / Display
-- SPI routed to E-paper connector
-- control lines for display driver
+## SPI
+- semnale rutate către conectorul display-ului e-paper
 
 ---
 
-# 🛠️ Design Process
+# Proces de proiectare
 
-## 1️⃣ Schematic
-The schematic was built based on the OCW reference design using only the provided libraries.
+## 1. Schematic
+În prima etapă am realizat schema electrică pornind de la modelul oferit pe OCW și folosind exclusiv biblioteca pusă la dispoziție.
 
-Implemented functional blocks:
+Am implementat blocurile:
 - LiPo Charger
 - DC/DC
 - IMU
@@ -100,38 +99,32 @@ Implemented functional blocks:
 - Buttons
 - USB-C + ESD
 
-During implementation:
-- passive values were adjusted
-- decoupling capacitors were added
-- net labels were created
-- power and signal lines were grouped by function
+În timpul realizării schemei:
+- am modificat valorile componentelor pasive;
+- am adăugat condensatoare de decuplare;
+- am etichetat semnalele importante;
+- am separat schematicul pe blocuri funcționale.
 
 ---
 
-## 2️⃣ PCB Design
-The PCB was designed using the provided mechanical outline.
+## 2. PCB Design
+PCB-ul a fost realizat pe baza dimensiunilor mecanice recomandate.
 
-Main steps:
-- TOP placement of all critical components
-- passive components placed close to IC power pins
-- routing on multiple layers
-- dedicated GND planes
-- antenna clearance preserved
-- USB-C and buttons aligned with enclosure
+Etapele principale:
+- placement TOP pentru componentele critice;
+- amplasarea componentelor pasive lângă pinii de alimentare;
+- rutare pe mai multe straturi;
+- plane dedicate de GND;
+- păstrarea zonei antenei liberă;
+- alinierea USB-C și a butoanelor cu carcasa.
 
-DRC was run and the main errors were corrected before export.
+La final am rulat DRC și am corectat erorile principale.
 
 ---
 
-## 3️⃣ 3D Model
-The full 3D assembly includes:
+## 3. Model 3D
+Modelul 3D include:
 - PCB
-- battery
+- baterie
 - display
-- enclosure
-
-The final STEP model was used to verify:
-- mechanical fit
-- USB-C alignment
-- button placement
-- internal clearance
+- carcasă
