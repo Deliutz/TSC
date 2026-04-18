@@ -55,6 +55,10 @@ Baterie LiPo
    |                     |
    +--------- I2C -------+
 
+```
+
+---
+
 # Bill of Materials (BOM)
 
 | Componenta | Cod | Rol | Interfata |
