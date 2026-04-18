@@ -4,37 +4,80 @@ Proiect hardware pentru realizarea unui smartwatch open-source low-cost, bazat p
 
 ---
 
-# Diagramă bloc
-```text
-Baterie LiPo → BQ25180 Charger → RT6160 Buck-Boost → Rail 3.3V
-                                           ↓
-                                     nRF52840 MCU
-                        ↙              ↓              ↘
-                   BMA423 IMU     E-Paper Display    DRV2605 Haptic
-                        ↓                               ↓
-                 MAX17048 Fuel Gauge             Motor vibrații
-                        ↓
-                    USB-C + ESD
-```
+# Diagrama bloc
 
----
+```text
+Baterie LiPo
+    |
+    v
++------------------+
+|   BQ25180YBGR    |
+| Charger / PMIC   |
++------------------+
+    |
+    v
++------------------+
+|    RT6160AWSC    |
+| Buck-Boost 3.3V  |
++------------------+
+    |
+    v
++------------------+
+|    nRF52840      |
+|   MCU + BLE      |
++------------------+
+   |      |      |      |      |
+   |      |      |      |      |
+   |      |      |      |      +-------------------+
+   |      |      |      |                          |
+   |      |      |      v                          v
+   |      |      |  +---------+              +-----------+
+   |      |      |  | Buttons |              | TC2030    |
+   |      |      |  | 3x GPIO |              | SWD Debug |
+   |      |      |  +---------+              +-----------+
+   |      |      |
+   |      |      +-------------------+
+   |      |                          |
+   |      v                          v
+   |  +-----------+            +------------+
+   |  | DRV2605   |----------->| Vibra motor|
+   |  | Haptic IC |            +------------+
+   |  +-----------+
+   |
+   +---------------------+
+   |                     |
+   v                     v
++---------+         +-----------+
+| BMA421  |         | MAX17048  |
+| IMU     |         | Fuel Gauge|
++---------+         +-----------+
+   ^                     ^
+   |                     |
+   +--------- I2C -------+
 
 # Bill of Materials (BOM)
 
-| Componentă | Cod | Rol | Interfață |
+| Componenta | Cod | Rol | Interfata |
 |---|---|---|---|
-| nRF52840 | U1 | Microcontroller principal + BLE | SPI / I2C / GPIO |
-| BQ25180YBGR | IC1 | Încărcare baterie LiPo | Power |
+| NRF52840_QF | U1 | Microcontroller principal + BLE | SPI / I2C / GPIO |
+| BQ25180YBGR | IC1 | Incarcare baterie LiPo / power management | Power / I2C |
 | RT6160AWSC | IC9 | Convertor buck-boost 3.3V | Power |
-| BMA423 | IC3 | Accelerometru / IMU | I2C |
+| BMA421 | IC3 | Accelerometru / IMU | I2C |
 | DRV2605YZFR | IC2 | Driver feedback haptic | I2C / GPIO |
 | MAX17048G+T10 | U3 | Fuel gauge baterie | I2C |
 | KH-TYPE-C-16P | J4 | Conector USB-C | USB |
-| USBLC6-2SC6Y | D3 | Protecție ESD USB | USB |
+| USBLC6-2SC6Y | D3 | Protectie ESD USB | USB |
 | 503480-2400 | J2 | Conector display e-paper | SPI |
-| 2450AT18B100E | ANT1 | Antenă 2.4 GHz BLE | RF |
+| 2450AT18B100E | ANT1 | Antena 2.4 GHz BLE | RF |
 | TC2030-IDC | J1 | Conector debugging SWD | SWD |
-| Butoane | SW_UP, SW_ENT, SW_DN | Input utilizator | GPIO |
+| SW_UP / SW_ENT / SW_DN | SW_UP, SW_ENT, SW_DN | Input utilizator | GPIO |
+| X1 | X1 | Cristal de mare frecventa pentru nRF52840 | Clock |
+| X2 32.768kHz | X2 | Cristal RTC / low power clock | Clock |
+| SI1308EDL-T1-GE3 | Q3 | MOSFET pentru comutare alimentare | Power / GPIO |
+| Q1 | Q1 | MOSFET pentru power switching | Power |
+| FTC252012SR47MBCA | L7 | Inductor pentru regulatorul de tensiune | Power |
+| MBR0530 | D2, D4, D5 | Diode Schottky pentru protectie / redresare | Power |
+| TP_* | TP_3.3V, TP_3V3, TP_BAT_GND, TP_GND, TP_ON, TP_OP, TP_RESET, TP_SCL, TP_SDA, TP_SWDCLK, TP_SWDIO, TP_SWO, TP_VBAT, TP_VREG | Test pads pentru validare si debugging | Test / Debug |
 
 ---
 
